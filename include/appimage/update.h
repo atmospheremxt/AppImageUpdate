@@ -129,5 +129,18 @@ namespace appimage::update {
 
         // copy permissions of the original AppImage to the new version
         void copyPermissionsToNewFile();
+
+        // checks if the url after zsync| has an alias
+        // the alias is used for getting update url from env variable
+        // this allows the usage of any given name of alias  eg "zsync|$MY_Update/MyApp.AppImage.zsync"
+        // this allows image to be updated from a computer within the same network
+        bool checkIfUPdateUrlHasAnAlias(std::string const rawString);
+
+        // updates rawUpdateInformation if an alias is found 
+        // example if raw update info is  zsync|$MY_UPDATE/MyApp.AppImage.zsync
+        // updateUrlInformationIfAliasFound will read the value of $MY_UPDATE
+        // and modidifie it from zsync|$MY_UPDATE/MyApp.AppImage.zsync to something like
+        // zsync|192.168.1.163/MyApp.AppImage.zsync
+        void updateUrlInformationIfAliasFound(std::string const rawUpdateString);
     };
 }

@@ -70,6 +70,30 @@ namespace appimage::update {
             return [this](const std::string& message) {issueStatusMessage(message);};
         }
 
+        std::string getEnvVariables(std::string env_path) {
+            if(const char* env_p = std::getenv(env_path.c_str())) {
+                std::string  __path__ = env_p;
+                return __path__;
+            }
+            return "" ;
+        }
+
+        bool checkIfUPdateUrlHasAnAlias(std::string const rawString) {
+            std::string subzsync = rawString.substr(rawString.find_first_of('|')+1, -1);
+            if ( subzsync[0] == '$' ) {
+                return 0;
+            }
+            return 1;
+        }
+
+        void updateUrlInformationIfAliasFound(std::string const rawUpdateString) {
+            std::string subzsync = rawUpdateString.substr(rawUpdateString.find_first_of('|')+1, -1);
+            std::string envAlias = subzsync.substr(1, subzsync.find('/')-1);
+            std::string audioPath = subzsync.substr(subzsync.find_first_of('/'), -1);
+            std::string updateURL = getEnvVariables(envAlias); 
+            rawUpdateInformation = "zsync|" + updateURL + audioPath;
+        }
+
         void validateAppImage() {
             // first check whether there's update information at all
             // note that we skip this check when custom update information is set intentionally
@@ -84,6 +108,14 @@ namespace appimage::update {
                 }
             }
 
+            std::cout << "****current url is  : " << rawUpdateInformation << "***" << std::endl;
+
+            if (!checkIfUPdateUrlHasAnAlias(rawUpdateInformation)){
+                updateUrlInformationIfAliasFound(rawUpdateInformation);
+            }
+
+            std::cout << "***new url is obtained from env : " << rawUpdateInformation << "***" << std::endl;
+            
             const auto updateInformationPtr = makeUpdateInformation(rawUpdateInformation);
             const auto zsyncUrl = updateInformationPtr->buildUrl(makeIssueStatusMessageCallback());
 
