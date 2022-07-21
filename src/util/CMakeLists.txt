@@ -1,5 +1,5 @@
 # INTERFACE library with source files requires CMake 3.19
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.16)
 
 add_library(util STATIC
     util.cpp
